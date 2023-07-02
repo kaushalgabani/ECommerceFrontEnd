@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/common/product';
 import { ProductService } from 'src/app/services/product.service';
+import { GetResponseProducts } from 'src/app/services/product.service';
+
 
 @Component({
   selector: 'app-product-list',
@@ -20,7 +22,8 @@ export class ProductListComponent {
   thePageSize: number = 10;
   theTotalElements: number = 0;
 
-  constructor(private productService: ProductService, private route: ActivatedRoute) { }
+  constructor(private productService: ProductService, 
+              private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(() => {
@@ -65,19 +68,18 @@ export class ProductListComponent {
     console.log(`Current categotyId = ${this.currentCategoryId}, Page Number = ${this.thePageNumber}`);
 
     //now get the products for the given category
-    this.productService.getProductListPaginated(this.thePageNumber - 1, 
+    this.productService.getProductListPaginate(this.thePageNumber - 1, 
                                                 this.thePageSize, 
-                                                this.currentCategoryId).subscribe(this.processResult());
+                                                this.currentCategoryId).subscribe(this.processResult);
   }
 
-  processResult() {
-    return data => {
+  processResult = (data: GetResponseProducts) => {
       this.products = data._embedded.products;
       this.thePageNumber = data.page.number + 1;
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     };
-  }
+  
 
   handleSearchProducts() {
     const theKeyword = this.route.snapshot.paramMap.get('keyword');
