@@ -10,54 +10,82 @@ import { ProductService } from 'src/app/services/product.service';
 })
 export class ProductListComponent {
 
-  products!: Product[];
-  currentCategoryId!  : number;
-  searchMode!: boolean;
+  products: Product[] = [];
+  currentCategoryId: number = 1;
+  previousCategoryId: number = 1;
+  searchMode: boolean = false;
 
-  constructor(private productService: ProductService, private route: ActivatedRoute){}
+  //New properties for pagination
+  thePageNumber: number = 1;
+  thePageSize: number = 10;
+  theTotalElements: number = 0;
 
-  ngOnInit(){
+  constructor(private productService: ProductService, private route: ActivatedRoute) { }
+
+  ngOnInit() {
     this.route.paramMap.subscribe(() => {
       this.listProducts();
     });
   }
 
-  listProducts(){
+  listProducts() {
     this.searchMode = this.route.snapshot.paramMap.has('keyword');
 
-    if(this.searchMode){
+    if (this.searchMode) {
       this.handleSearchProducts();
-    }else{
+    } else {
       this.handleListProducts();
     }
 
   }
 
-  handleListProducts(){
+  handleListProducts() {
 
     //Check if "id" parameter is available
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
 
-    if(hasCategoryId){
+    if (hasCategoryId) {
       //get the "id" param string. convert string into a number using "+" symbol
       this.currentCategoryId = Number(this.route.snapshot.paramMap.get('id'));
-    }else{
+    } else {
       // no category id available.. default to category id 1
       this.currentCategoryId = 1;
     }
+
+    //Check if we have a different category than previous
+    //Note: Angular will reuse a component if it is currently being viewed
+
+    //if we hava a different category id than previous
+    //then set thePageNumber back to 1
+    if (this.previousCategoryId != this.currentCategoryId) {
+      this.thePageNumber = 1;
+    }
+
+    this.previousCategoryId = this.currentCategoryId;
+    console.log(`Current categotyId = ${this.currentCategoryId}, Page Number = ${this.thePageNumber}`);
+
     //now get the products for the given category
-    this.productService.getProductList(this.currentCategoryId).subscribe(data => {
-      this.products = data;
-    })
+    this.productService.getProductListPaginated(this.thePageNumber - 1, 
+                                                this.thePageSize, 
+                                                this.currentCategoryId).subscribe(this.processResult());
   }
 
-  handleSearchProducts(){
+  processResult() {
+    return data => {
+      this.products = data._embedded.products;
+      this.thePageNumber = data.page.number + 1;
+      this.thePageSize = data.page.size;
+      this.theTotalElements = data.page.totalElements;
+    };
+  }
+
+  handleSearchProducts() {
     const theKeyword = this.route.snapshot.paramMap.get('keyword');
 
     // search for the product using keyword
-    if(theKeyword){
+    if (theKeyword) {
       this.productService.searchProducts(theKeyword).subscribe(
-        data=>{
+        data => {
           this.products = data;
         });
     }
