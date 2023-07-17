@@ -13,13 +13,13 @@ export class CartDetailsComponent {
   totalPrice: number = 0;
   totalQuantity: number = 0;
 
-  constructor(private cartService: CartService){}
+  constructor(private cartService: CartService) { }
 
-  ngOnInit(): void{
+  ngOnInit(): void {
     this.listCartDetails();
   }
 
-  listCartDetails(){
+  listCartDetails() {
     // get a handle to the cart items
     this.cartItems = this.cartService.cartItems;
 
@@ -35,6 +35,18 @@ export class CartDetailsComponent {
 
     // compute cart total price and quantity
     this.cartService.computeCartTotals();
+  }
+
+  incrementQuantity(cartItems: CartItem) {
+    this.cartService.addToCart(cartItems);
+  }
+
+  decrementQuantity(cartItems: CartItem) {
+    this.cartService.removeFromCart(cartItems);
+  }
+
+  remove(cartItems: CartItem) {
+    this.cartService.remove(cartItems);
   }
 
 }
