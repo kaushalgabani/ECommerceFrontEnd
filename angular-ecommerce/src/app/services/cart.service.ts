@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CartItem } from '../common/cart-item';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +9,8 @@ export class CartService {
 
   cartItems: CartItem[] = [];
 
-  totalPrice: Subject<number> = new Subject<number>;
-  totalQuantity: Subject<number> = new Subject<number>;
+  totalPrice: Subject<number> = new BehaviorSubject<number>(0);
+  totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
 
   constructor() { }
 
@@ -39,13 +39,13 @@ export class CartService {
     this.computeCartTotals();
   }
 
-  removeFromCart(theCartItem: CartItem){
-   theCartItem.quantity--;
-   if(theCartItem.quantity ===0){
-    this.remove(theCartItem);
-   }else{
-    this.computeCartTotals();
-   }
+  removeFromCart(theCartItem: CartItem) {
+    theCartItem.quantity--;
+    if (theCartItem.quantity === 0) {
+      this.remove(theCartItem);
+    } else {
+      this.computeCartTotals();
+    }
   }
 
   remove(theCartItem: CartItem) {
@@ -53,18 +53,18 @@ export class CartService {
     const itemIndex = this.cartItems.findIndex(tmpIndex => tmpIndex.id === theCartItem.id);
 
     // if found, remove the item from the array at the given index
-    if(itemIndex > -1){
+    if (itemIndex > -1) {
       this.cartItems.splice(itemIndex, 1);
 
       this.computeCartTotals();
     }
   }
 
-  computeCartTotals(){
+  computeCartTotals() {
     let totalPriceValue: number = 0;
     let totalQuantityValue: number = 0;
 
-    for(let tmpCartItem of this.cartItems){
+    for (let tmpCartItem of this.cartItems) {
       totalPriceValue += tmpCartItem.quantity * tmpCartItem.unitPrice;
       totalQuantityValue += tmpCartItem.quantity;
     }
@@ -77,10 +77,10 @@ export class CartService {
     this.logCartData(totalPriceValue, totalQuantityValue);
   }
 
-  logCartData(totalPriceValue: number, totalQuantityValue:number){
+  logCartData(totalPriceValue: number, totalQuantityValue: number) {
     console.log('Contents of the cart');
 
-    for(let tmpCartItem of this.cartItems){
+    for (let tmpCartItem of this.cartItems) {
       const subTotalPrice = tmpCartItem.quantity * tmpCartItem.unitPrice;
       console.log(`Item name: ${tmpCartItem.name}, Quantity: ${tmpCartItem.quantity}, Unit Price: ${tmpCartItem.unitPrice}, Sub Total Price: ${subTotalPrice}`);
     }
