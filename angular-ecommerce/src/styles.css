@@ -47,7 +47,7 @@ button {
 
 img {
     max-width: 100%;
-    height: auto
+    height: 73px;
 }
 
 p {
@@ -948,7 +948,7 @@ footer ul li {
     }
 
     .logo {
-        text-align: center
+        text-align: center;
     }
 
     .header-desktop {

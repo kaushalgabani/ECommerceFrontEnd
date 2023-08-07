@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule, inject } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -6,7 +6,7 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { HttpClientModule } from '@angular/common/http';
 import { ProductService } from './services/product.service';
 
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, Router } from '@angular/router';
 import { ProductCategoryMenuComponent } from './components/product-category-menu/product-category-menu.component';
 import { SearchComponent } from './components/search/search.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
@@ -17,6 +17,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CartStatusComponent } from './components/cart-status/cart-status.component';
 import { CartDetailsComponent } from './components/cart-details/cart-details.component';
 import { CheckoutComponent } from './components/checkout/checkout.component';
+
+import myAppConfig from './config/my-app-config';
+
+const oktaConfig = Object.assign({
+  onAuthRequired: (Injector: any) => {
+    const router = Injector.get(Router);
+
+    // redirect user to customer login page
+    router.navigate(['/login']);
+  }
+}, myAppConfig.oidc);
 
 const routes: Routes = [
   { path: 'checkout', component: CheckoutComponent },
@@ -38,7 +49,7 @@ const routes: Routes = [
     ProductDetailsComponent,
     CartStatusComponent,
     CartDetailsComponent,
-    CheckoutComponent
+    CheckoutComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -47,7 +58,8 @@ const routes: Routes = [
     FormsModule,
     NgbPaginationModule,
     NgbModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+
   ],
   providers: [ProductService],
   bootstrap: [AppComponent],
