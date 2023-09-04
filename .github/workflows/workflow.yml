@@ -30,12 +30,6 @@ jobs:
         with:
           artifacts: "dist/angular-githubaction/*"
           token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: npm install and npm run CI commands
-          run: |
-            npm i
-            npm run test:ci
-            npm run build:ci
 
 # name: Angular CI/CD
 
