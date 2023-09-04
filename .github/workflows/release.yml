@@ -1,0 +1,49 @@
+name: Release Workflow
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: |
+          cd angular-ecommerce
+          npm install
+
+      - name: Run Tests
+        run: |
+          cd angular-ecommerce
+          npm run test:ci
+
+      - name: Build for Production
+        run: |
+          cd angular-ecommerce
+          npm run build:prod
+
+      - name: Create and Push Tag
+        run: |
+          git config kaushalgabani"
+          git config kaushalgabani21@gmail.com
+          git tag -a v1.0.0 -m "Release version 1.0.0" 
+          git push origin v1.0.0
+        if: success()  # This step runs only if the previous steps were successful
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifact
+          path: angular-ecommerce/dist/angular-githubaction/*
+
