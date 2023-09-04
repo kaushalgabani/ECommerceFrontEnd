@@ -1,25 +1,32 @@
+on: push
 name: Angular CI/CD
-
-on:
-  push:
-    branches:
-      - "main"
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v1
 
-      - name: Set Up Node.js
-        uses: actions/setup-node@v2
+      - name: Cache node modules
+        uses: actions/cache@v1
         with:
-          node-version: 14
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Angular App
-        run: npm run build -- --prod
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install and npm run build
+        run: |
+          npm i
+          npm run build:prod
+      - name: Push Build to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/angular-githubaction/*"
+          token: ${{ secrets.TOKEN }}
