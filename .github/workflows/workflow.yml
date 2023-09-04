@@ -71,5 +71,3 @@ jobs:
         with:
           name: build-artifact
           path: ./angular-ecommerce/dist/ # Adjust the path to your build output directory
-
-
