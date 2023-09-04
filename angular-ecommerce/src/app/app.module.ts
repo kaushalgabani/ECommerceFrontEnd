@@ -58,8 +58,7 @@ const routes: Routes = [
     FormsModule,
     NgbPaginationModule,
     NgbModule,
-    ReactiveFormsModule,
-
+    ReactiveFormsModule
   ],
   providers: [ProductService],
   bootstrap: [AppComponent],
