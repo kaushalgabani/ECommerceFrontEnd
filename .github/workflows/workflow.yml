@@ -1,32 +1,71 @@
-on: push
+# on: push
+# name: Angular CI/CD
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         node-version: [12.x]
+
+#     steps:
+#       - uses: actions/checkout@v2
+
+#       - name: Cache node modules
+#         uses: actions/cache@v1
+#         with:
+#           path: ~/.npm
+#           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+#           restore-keys: |
+#             ${{ runner.os }}-node-
+#       - name: Node ${{ matrix.node-version }}
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#       - name: npm install and npm run build
+#         run: |
+#           npm i
+#           npm run build:prod
+#       - name: Push Build to Releases
+#         uses: ncipollo/release-action@v1
+#         with:
+#           artifacts: "dist/angular-githubaction/*"
+#           token: ${{ secrets.GITHUB_TOKEN }}
+          
+#       - name: npm install and npm run CI commands
+#           run: |
+#             npm i
+#             npm run test:ci
+#             npm run build:ci
+
 name: Angular CI/CD
+
+on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      - name: Cache node modules
-        uses: actions/cache@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+          node-version: 18.15.0
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Tests in CI Mode
+        run: npm run test:ci # Adjust this script name if needed
+
+      - name: Build for CI
+        run: npm run build:ci # Adjust this script name if needed
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: npm install and npm run build
-        run: |
-          npm i
-          npm run build:prod
-      - name: Push Build to Releases
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "dist/angular-githubaction/*"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: build-artifact
+          path: dist/ # Adjust the path to your build output directory
+
