@@ -1,63 +1,33 @@
-name: Angular CI/CD and Deployment
+name: Build and Deploy
 
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+      - main # Change to your main branch name
 
 jobs:
-    # Build and Deploy job
-    build-and-deploy:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v2
-  
-        - name: Cache node modules
-          uses: actions/cache@v1
-          with:
-            path: ~/.npm
-            key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-            restore-keys: |
-              ${{ runner.os }}-node-
-  
-        - name: Setup Node.js
-          uses: actions/setup-node@v2
-          with:
-            node-version: 14
-  
-        - name: Install Dependencies
-          run: |
-            cd angular-ecommerce
-            npm install
-  
-        - name: Build Angular App
-          run: |
-            cd angular-ecommerce
-            npm run build:prod
-  
-        # ... the rest of your steps ...
-  
-        - name: Deploy to GitHub Pages
-          id: deployment
-          run: |
-            cp -R angular-ecommerce/dist/* .
-            git add .
-            git commit -m "Deploy to GitHub Pages"
-            git push
-  
-        - name: Configure Git
-          run: |
-            git config --global user.name "kaushalgabani"
-            git config --global user.email "kaushalgabani21@gmail.com"
-  
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.17.1 # You can specify your desired Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist/angular-ecommerce
+
