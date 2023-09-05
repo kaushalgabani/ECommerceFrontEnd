@@ -1,38 +1,24 @@
-name: Build and deploy
-
+name: Deploy to github pages
 on:
-  push:
-    branches:
-      - main
+    push:
+      branches:
+        - master
+  jobs:
+    gh-pages-deploy:
+      name: Deploying to gh-pages
+      runs-on: ubuntu-latest
+      steps:
+        - name: Setup Node.js for use with actions
+          uses: actions/setup-node@v2
+          with:
+            version:  12.x
+        - name: Checkout branch
+          uses: actions/checkout@v2
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+        - name: Clean install dependencies
+          run: npm ci
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'  # Adjust the Node.js version as needed
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build Angular app
-      working-directory: ./angular-ecommerce  # Specify the correct path to your Angular project
-      run: npm run ng build -- --prod
-    
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist/angular-ecommerce  # Replace with the correct path to your built Angular app
+        - name: Run deploy script
+          run: |
+            git config user.name "Your username" && git config user.email "your email"
+            npm run gh-pages-deploy
