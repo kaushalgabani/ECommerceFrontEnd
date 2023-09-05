@@ -44,7 +44,7 @@ jobs:
         - name: Build Angular App
           run: |
             cd angular-ecommerce
-            npm run build -- --prod
+            npm run build:prod
   
         # ... the rest of your steps ...
   
