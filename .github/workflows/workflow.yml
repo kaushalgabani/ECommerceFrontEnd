@@ -22,7 +22,9 @@ jobs:
       run: npm install
 
     - name: Build Angular app
+      working-directory: ./angular-ecommerce  # Specify the correct path to your Angular project
       run: npm run build --prod
+    
 
   deploy:
     needs: build
@@ -33,4 +35,4 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist/your-angular-project  # Replace with the correct path to your built Angular app
+        publish_dir: ./dist/angular-ecommerce  # Replace with the correct path to your built Angular app
