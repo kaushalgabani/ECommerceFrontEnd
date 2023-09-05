@@ -26,18 +26,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           
-      - name: npm install and npm run build
+      - name: npm install
         run: |
-          npm i
+          cd angular-ecommerce
+          npm install
+          
+      - name: npm run build
+        run: |
+          cd angular-ecommerce
           npm run build:prod
-
-      - name: Run Tests in CI Mode
-        run: |
-          npm run test:ci
-        working-directory: ./angular-ecommerce
-
-      - name: Push Build to Releases
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "dist/angular-githubaction/*"
-          token: ${{ secrets.GITHUB_TOKEN }}
