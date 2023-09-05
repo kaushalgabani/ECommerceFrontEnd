@@ -23,7 +23,7 @@ jobs:
 
     - name: Build Angular app
       working-directory: ./angular-ecommerce  # Specify the correct path to your Angular project
-      run: npm run build --prod
+      run: npm run ng build -- --prod
     
 
   deploy:
