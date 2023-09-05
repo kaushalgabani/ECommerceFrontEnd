@@ -1,24 +1,43 @@
-name: Deploy to github pages
-on:
-    push:
-      branches:
-        - main
+name: Angular CI/CD
+
+on: [push]
+
 jobs:
-    gh-pages-deploy:
-      name: Deploying to gh-pages
-      runs-on: ubuntu-latest
-      steps:
-        - name: Setup Node.js for use with actions
-          uses: actions/setup-node@v2
-          with:
-            version:  16
-        - name: Checkout branch
-          uses: actions/checkout@v2
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.17.1]
 
-        - name: Clean install dependencies
-          run: npm ci
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-        - name: Run deploy script
-          run: |
-            git config user.name "kaushalgabani" && git config user.email "kaushalgabani21@gmail.com"
-            npm run gh-pages-deploy
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: npm install and npm run build
+        run: |
+          npm i
+          npm run build:prod
+
+      - name: Run Tests in CI Mode
+        run: |
+          npm run test:ci
+        working-directory: ./angular-ecommerce
+
+      - name: Push Build to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/angular-githubaction/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
